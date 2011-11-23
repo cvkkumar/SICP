@@ -174,12 +174,3 @@
 
 (define (product-int-iter-using-accumulate a b)
   (accumulate * 1 identity a inc b))
-
-;; In order to define sum and product as accumulate functions, we return a function that takes term,a ,next b and returns the 
-;; appropriate sum/product function. Note the absence of the paren ( in the 1st define line
-(define product-using-accumulate
-  (λ(term a next b) 
-    (accumulate * 1 term a next b)))
-(define sum-using-accumulate
-  (λ(term a next b) 
-    (accumulate + 0 term a next b)))
