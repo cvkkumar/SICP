@@ -152,5 +152,25 @@
 (define (factorial n)
   (product-int-iter 1 n))
 
+(define (approximate-pi)
+  (define (term x) (/ (* x  (+ x 2)) (square (+ x 1))))
+  (define (next x) (+ x 2))
+  (* 4 (product-iter term 2.0 next 100000000)))
+;; Wow! Wonderful!
+
 ;;;;;;;;;; 1.32
-      
+;; Iterative Accumulator
+(define (accumulate-iter combiner null-value term a next b)
+  (define (iter a result)
+    (if ( > a b)
+        result
+        (iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+;; Recursive Accumulator
+(define (accumulate combiner null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner (term a) (accumulate combiner null-value term (next a) next b))))
+
+(define (product-int-iter-using-accumulate a b)
+  (accumulate * 1 identity a inc b))
