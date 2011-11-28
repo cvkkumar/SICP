@@ -128,7 +128,51 @@
 
 (define (cdr2 z)
   ((my-func z 0 0) 1))
-;;; CLOSURE : means of combination where same
 
 
+;;; Ex 2.6
 ;;;;2.6 : OUT of scope for me currently. I m mindblown! 
+
+;;; Ex 2.7
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+
+
+(define (mul-interval x y)
+     (let ((p1 (* (lower-bound x) (lower-bound y)))
+           (p2 (* (lower-bound x) (upper-bound y)))
+           (p3 (* (upper-bound x) (lower-bound y)))
+           (p4 (* (upper-bound x) (upper-bound y))))
+       (make-interval (min p1 p2 p3 p4)
+                      (max p1 p2 p3 p4))))
+
+(define (div-interval x y)
+  (cond ((= (width y) 0)
+         (error "Div by 0:div-interval"))
+         (else (mul-interval x
+                (make-interval (/ 1.0 (upper-bound y))
+                               (/ 1.0 (lower-bound y)))))))
+
+(define (make-interval a b) (cons a b))
+(define (lower-bound interval)
+  (car interval))
+(define (upper-bound interval)
+  (cdr interval))
+
+(define (width interval)
+  (/ (- (upper-bound interval) (lower-bound interval)) 2.0))
+
+;;; Ex 2.8
+(define (sub-interval x y)
+  (let ((p1 (- (lower-bound x) (lower-bound y)))
+        (p2 (- (lower-bound x) (upper-bound y)))
+        (p3 (- (upper-bound x) (lower-bound y)))
+        (p4 (- (upper-bound x) (upper-bound y)))
+        (p5 (- (lower-bound y) (lower-bound x)))
+        (p6 (- (lower-bound y) (upper-bound x)))
+        (p7 (- (upper-bound y) (lower-bound x)))
+        (p8 (- (upper-bound y) (upper-bound x))))
+    (make-interval (min p1 p2 p3 p4 p5 p6 p7 p8)
+                   (max p1 p2 p3 p4 p5 p6 p7 p8)))
+  )
