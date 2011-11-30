@@ -11,9 +11,9 @@
   (cond (x-p
          (cond (y-p #t)
                (else #f)))
-         (else #f)))
-  
-         
+        (else #f)))
+
+
 
 ;; Let establishes local names by setting up contexts
 ;; Syntax (let (( var ) (expr))
@@ -89,11 +89,11 @@
   (cdr segment))
 
 (define (mid-point segment)
-   (scale-point 
-               (add-point
-                (start-segment segment)
-                (end-segment segment))
-               0.5))
+  (scale-point 
+   (add-point
+    (start-segment segment)
+    (end-segment segment))
+   0.5))
 
 (define (square x) (* x x))
 ;;;; WOW!!!
@@ -108,7 +108,7 @@
 
 ;;; Ex 2.4
 (define (your-cons x y)
-         (lambda (m) (m x y)))
+  (lambda (m) (m x y)))
 (define (your-car z)
   (z (lambda (p q) p)))
 
@@ -120,9 +120,9 @@
   (* (expt 2 a) (expt 3 b)))
 (define (my-func num result-2 result-3)
   (cond ((<= num 1) (λ(x) (cond ((= x 0) result-2)
-                               (else result-3))))
-  (else (cond ((= (remainder num 2) 0) (my-func (/ num 2.0) (+ result-2 1) result-3))
-        (else  (my-func (/ num 3) (+ result-2 0) (+ result-3 1)))))))
+                                (else result-3))))
+        (else (cond ((= (remainder num 2) 0) (my-func (/ num 2.0) (+ result-2 1) result-3))
+                    (else  (my-func (/ num 3) (+ result-2 0) (+ result-3 1)))))))
 (define (car2 z)
   ((my-func z 0 0) 0))
 
@@ -140,19 +140,19 @@
 
 
 (define (mul-interval x y)
-     (let ((p1 (* (lower-bound x) (lower-bound y)))
-           (p2 (* (lower-bound x) (upper-bound y)))
-           (p3 (* (upper-bound x) (lower-bound y)))
-           (p4 (* (upper-bound x) (upper-bound y))))
-       (make-interval (min p1 p2 p3 p4)
-                      (max p1 p2 p3 p4))))
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
 
 (define (div-interval x y)
   (cond ((= (width y) 0)
          (error "Div by 0:div-interval"))
-         (else (mul-interval x
-                (make-interval (/ 1.0 (upper-bound y))
-                               (/ 1.0 (lower-bound y)))))))
+        (else (mul-interval x
+                            (make-interval (/ 1.0 (upper-bound y))
+                                           (/ 1.0 (lower-bound y)))))))
 
 (define (make-interval a b) (cons a b))
 (define (lower-bound interval)
@@ -176,3 +176,112 @@
     (make-interval (min p1 p2 p3 p4 p5 p6 p7 p8)
                    (max p1 p2 p3 p4 p5 p6 p7 p8)))
   )
+
+
+
+;;;; TODO : Complete Alyssa HAcker problems
+
+;; To get the nth element of the list
+(define (list-ref items n)
+  (if (= n 0)
+      (car items)
+      (list-ref (cdr items) (- n 1))))
+
+(define (length items)
+  (define (length-iter l count)
+    (if (null? items)
+        count
+        (length-iter (cdr l) (+ 1 count))))
+  (length-iter items 0))
+
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+
+;;; Ex 2.17
+
+(define (last-pair l)
+  (cond ((null? l) '())
+        ((null? (cdr l)) (car l))
+        (else (last-pair (cdr l)))))
+
+;;; Ex 2.18
+(define (reverse l)
+  (cond ((null? l) '())
+        ((null? (cdr l)) (list (car l)))
+        (else (append (reverse (cdr l)) (list (car l))))))
+
+;;; Ex 2.19
+
+(define (count-change amount)
+  (cc amount 5))
+
+;(define (cc amount kinds-of-coins)
+;  (cond ((= amount 0) 1)
+;        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+;        (else (+ (cc amount (- kinds-of-coins 1))
+;                 (cc (- amount (first-denomination kinds-of-coins)) kinds-of-coins)))))
+;
+;(define (first-denomination kinds-of-coins)
+;  (cond ((= kinds-of-coins 1) 1)
+;        ((= kinds-of-coins 2) 5)
+;        ((= kinds-of-coins 3) 10)
+;        ((= kinds-of-coins 4) 25)
+;        ((= kinds-of-coins 5) 50)))
+
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount 
+                (except-first-denomination coin-values))
+            (cc (- amount 
+                   (first-denomination coin-values))
+                coin-values)))))
+;;;; 2.19
+(define (no-more? coin-values)
+  (null? coin-values))
+
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+
+(define (first-denomination coin-values)
+  (car coin-values))
+
+;;;; 2.20 : See, i used the dotted notation.
+(define (same-parity x . l)
+  (append (list x) 
+          (filter (λ(y) (= (- (remainder x 2) (remainder y 2)) 0)) l)))
+
+;;; 2.21
+(define (square-list-by-map l)
+  (map (λ(x) (square x)) l))
+
+(define (square-list items)
+  (if (null? items)
+      '()
+      (cons (square (car items)) (square-list (cdr items)))))
+
+;;; 2.22
+(define (square-list-iter items)
+  (define (iter things answer)
+    (if (null? things)
+        answer 
+        (iter (cdr things) (append answer (list (square (car things)))))))
+  (iter items '()))
+
+;; The answer is in reverse order because of cons. The correct implementation is above.
+
+;;; 2.23
+
+(define (for-each f items)
+  (if (null? items)
+      '()
+      (append (list (f (car items))) (for-each f (cdr items))))
+  #t)
+  
+  
