@@ -187,9 +187,14 @@
       (car items)
       (list-ref (cdr items) (- n 1))))
 
+(define (length-recur items)
+  (if (null? items)
+      0
+      (+ 1 (length-recur (cdr items)))))
+
 (define (length items)
   (define (length-iter l count)
-    (if (null? items)
+    (if (null? l)
         count
         (length-iter (cdr l) (+ 1 count))))
   (length-iter items 0))
@@ -284,4 +289,26 @@
       (append (list (f (car items))) (for-each f (cdr items))))
   #t)
   
-  
+
+(define (count-leaves item)
+  (cond ((null? item)  0)
+        ((not (pair? item)) 1)
+        (else (+ 
+               (count-leaves (car item))
+               (count-leaves (cdr item))))))
+;;; 2.24
+;Answer = 4. Only 1,2 3 and 4 are leaf nodes
+
+;;; 2.25
+;(car (cdr (car (cdr (cdr y)))))
+;(car (car y))
+;(cadr (cadr (cadr (cadr (cadr (cadr y))))))
+
+;;; 2.26
+; (define x (list 1 2 3))
+; (define y (list 4 5 6))
+; (append x y) => (1 2 3 4 5 6)
+;(cons x y) => ((1 2 3) 4 5 6)
+; (list x y) => ((1 2 3) (4 5 6)
+
+;;; 2.27 - Deep Reversing a list
