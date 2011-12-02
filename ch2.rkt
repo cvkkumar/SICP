@@ -311,4 +311,9 @@
 ;(cons x y) => ((1 2 3) 4 5 6)
 ; (list x y) => ((1 2 3) (4 5 6)
 
-;;; 2.27 - Deep Reversing a list
+;;; 2.27 - Deep Reversing a list - WOW. I am not sure i completely understand how i wrote it!
+(define (deep-reverse l)
+  (cond ((null? l) '())
+        ((null? (cdr l)) (cond ((list? (car l)) (list (deep-reverse (car l))))
+                               (else (list (car l)))))
+        (else (append (deep-reverse (cdr l)) (deep-reverse (list (car l)))))))
