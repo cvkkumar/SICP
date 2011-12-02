@@ -317,3 +317,12 @@
         ((null? (cdr l)) (cond ((list? (car l)) (list (deep-reverse (car l))))
                                (else (list (car l)))))
         (else (append (deep-reverse (cdr l)) (deep-reverse (list (car l)))))))
+
+
+;;; 2.28 
+
+(define (fringe l)
+  (cond ((null? l) '())
+        ((not (pair? l)) (list l) )
+        (else (append (fringe  (car l)) (fringe (cdr l))))))
+        
