@@ -371,3 +371,38 @@
        (and (branch-balanced? (left-branch mobile))
        (branch-balanced? (right-branch mobile)))))
   
+;;;; 
+(define nil '())
+
+(define (scale-tree tree factor)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (* tree factor))
+        (else (cons (scale-tree (car tree) factor)
+                    (scale-tree (cdr tree) factor)))))
+
+
+(define (map-tree f tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (f tree))
+        (else (cons (map-tree f (car tree))
+                    (map-tree f (cdr tree))))))
+;;; 2.30,2.31 - Defining Square Tree Using Higher Order Procedure
+(define (square-tree tree)
+  (map-tree square tree))
+
+(define (square-tree-recur tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (square tree))
+        (else (cons (square-tree-recur (car tree))
+                    (square-tree-recur (cdr tree))))))
+
+
+;;;; 2.32 Set of all Subsets 
+(define (subsets s)
+  (if (null? s) (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest 
+                (map 
+                 (λ(x) (cons (car s) x))
+                   rest)))))
+         
