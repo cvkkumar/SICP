@@ -199,10 +199,10 @@
         (length-iter (cdr l) (+ 1 count))))
   (length-iter items 0))
 
-(define (append list1 list2)
-  (if (null? list1)
-      list2
-      (cons (car list1) (append (cdr list1) list2))))
+;(define (append list1 list2)
+;  (if (null? list1)
+;      list2
+;      (cons (car list1) (append (cdr list1) list2))))
 
 ;;; Ex 2.17
 
@@ -405,4 +405,141 @@
                 (map 
                  (λ(x) (cons (car s) x))
                    rest)))))
-         
+
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+
+
+(define (range low high)
+  (if (> low high) 
+      '()
+      (cons low (range (+ low 1) high))))
+
+(define (enumerate-tree tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) ( list tree))
+        (else (append (enumerate-tree (car tree))
+                      (enumerate-tree (cdr tree))))))
+
+(define (sum-odd-squares tree)
+  (accumulate +
+              0
+              (map square
+                   (filter odd? 
+                           (enumerate-tree tree)))))
+
+;;; 2.33
+(define (map-mine p sequence)
+  (accumulate (λ(x y) (cons (p x) y))
+              nil
+              sequence))
+
+(define (append-mine seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length-mine sequence)
+  (accumulate 
+   (λ(x y) 
+     (cond ((null? x) (+ 0 y))
+           (else (+ 1  y))))
+   0
+   sequence))
+;;; Now I get accumulate. It take 2 arguments and a function to combine those two arguments   
+
+
+;;; 2.34
+(define (horner-eval x coefficient-sequence)
+  (accumulate (λ(this-coeff higher-terms)
+                (cond ((null? higher-terms) (* x this-coeff))
+                      (else (+ (* x higher-terms) this-coeff))))
+                0
+                coefficient-sequence))
+
+;;; 2.35 - NOT DOING THIS NOW (count-leaves using accumulate
+
+;;;2.36
+
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      nil
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+;;; 2.37
+
+(define (make-vector l)
+  ;; l is a list of numbers
+  l)
+
+(define (make-matrix m)
+  ;;; m is a list of vectors row wise.
+  m)
+
+
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (λ(x) (dot-product x v)) m))
+
+(define (transpose mat)
+  (accumulate-n cons '() mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (λ(x) (matrix-*-vector cols x)) m)))
+;; Super! I thought of this all by myself
+
+
+(define (enumerate-interval initial final)
+  (cond ((> initial final) '())
+        (else (append (list initial) (enumerate-interval (+ initial 1) final)))))
+
+
+;;; 2.38
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if ( null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+;;;
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+
+(define (permutations s)
+  (if (null? s)
+      (list nil)
+      (flatmap (λ(x)
+                 (map (λ(p) (cons x p))
+                      (permutations (remove  x s))))
+               s)))
+
+
+;;; 2.40
+
+(define (unique-pairs n)
+  (flatmap (λ(i)
+             (map (λ(j) (list i j))
+                  (enumerate-interval 1 (- i 1))))
+             (enumerate-interval 1 n)))
+
+(define (unique-triples n)
+  (flatmap (λ(i)
+             (flatmap (λ(j) 
+                    (map (λ(k) (list i j k))
+                         (enumerate-interval 1 (- j 1))))
+                  (enumerate-interval 1 (- i 1)))
+           (enumerate-interval 1 (- n 1)))))
+
+;;;2.41 - To find all ordered triples of distinct positive integers i j k <= n that sum to a given integer s
+
+;; enumerate followed by a filter
+(define (ordered-triples n s)
+  (list n s))

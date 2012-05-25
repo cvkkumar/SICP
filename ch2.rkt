@@ -199,10 +199,10 @@
         (length-iter (cdr l) (+ 1 count))))
   (length-iter items 0))
 
-(define (append list1 list2)
-  (if (null? list1)
-      list2
-      (cons (car list1) (append (cdr list1) list2))))
+;(define (append list1 list2)
+;  (if (null? list1)
+;      list2
+;      (cons (car list1) (append (cdr list1) list2))))
 
 ;;; Ex 2.17
 
@@ -494,6 +494,11 @@
 ;; Super! I thought of this all by myself
 
 
+(define (enumerate-interval initial final)
+  (cond ((> initial final) '())
+        (else (append (list initial) (enumerate-interval (+ initial 1) final)))))
+
+
 ;;; 2.38
 
 (define (fold-left op initial sequence)
@@ -503,3 +508,38 @@
         (iter (op result (car rest))
               (cdr rest))))
   (iter initial sequence))
+
+;;;
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+
+(define (permutations s)
+  (if (null? s)
+      (list nil)
+      (flatmap (λ(x)
+                 (map (λ(p) (cons x p))
+                      (permutations (remove  x s))))
+               s)))
+
+
+;;; 2.40
+
+(define (unique-pairs n)
+  (flatmap (λ(i)
+             (map (λ(j) (list i j))
+                  (enumerate-interval 1 (- i 1))))
+             (enumerate-interval 1 n)))
+
+(define (unique-triples n)
+  (flatmap (λ(i)
+             (flatmap (λ(j) 
+                    (map (λ(k) (list i j k))
+                         (enumerate-interval 1 (- j 1))))
+                  (enumerate-interval 1 (- i 1)))
+           (enumerate-interval 1 (- n 1)))))
+
+;;;2.41 - To find all ordered triples of distinct positive integers i j k <= n that sum to a given integer s
+
+;; enumerate followed by a filter
+(define (ordered-triples n s)
+  (list n s))
