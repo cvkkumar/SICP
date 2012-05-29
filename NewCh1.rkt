@@ -58,14 +58,15 @@
           (else (expt-iter2 (* a b) b  (- n 1) ))))
   (expt-iter2 1 b n))
 
-(define (double x)
-  (* 2 x))
 
-(define (halve x)
-  (/ x 2))
 
 
 (define (mult a b)
+  (define (double x)
+    (* 2 x))
+
+  (define (halve x)
+    (/ x 2))
   (define (mult-iter s a b)
     (cond (( = b 0) 0)
           ((= b 1 ) s)
@@ -218,3 +219,161 @@
   (define (relative-prime? x)
     (= (gcd x n) 1))
   (filtered-accumulate * 1 identity 1 inc n relative-prime?))
+
+;;; Ex 1.34
+(define (f-ex1.34 g)
+  (g 2))
+
+;;;; Section 1.3.3
+(define (average x y)
+  (/ (+ x y)
+     2.0))
+
+(define (cube x)
+  (* x x x ))
+
+(define (search f neg-point pos-point)
+  (define (close-enough? x y)
+    (< (abs (- x y)) 0.00001))
+  (let ((midpoint (average neg-point pos-point)))
+    (if (close-enough? neg-point pos-point) ;; Termination condition
+        midpoint
+        (let ((test-value (f midpoint))) 
+          (cond ((positive? test-value) (search f  neg-point midpoint))
+                ((negative? test-value) (search f midpoint pos-point))
+                (else midpoint))))))
+                 
+(define (half-interval-method f a b)
+  (let ((a-value (f a))
+        (b-value (f b)))
+    (cond ((and (< a-value 0) (> b-value 0))
+           (search f a b))
+          ((and (> a-value 0) (< b-value 0))
+           (search f b a))
+          (else (error "Values are not of opposite sign" a b)))))
+  
+
+
+
+;;; Ex 1.35
+(define (get-golden-ratio)
+ (find-fixed-point (λ(x) (+ 1 (/ 1.0 x))) 1.0))
+; Returns 1.6180371352785146
+
+;;; Ex 1.36 - Solves x^x = c by finding the fixed point of x = log(c)/ log(x);
+(define (ex-1.36 c initial-guess)
+  (find-fixed-point (λ(x) (/ (log c) (log x))) initial-guess))
+
+
+;;; Ex 1.37
+
+(define (cont-frac-recur n d k)
+  (define (f i)
+    (if (= i k) (/ (n k) (d k))
+        (/ (n i) (+ (d i) (f (+ i 1 ))))))
+  (f 1))
+
+;;; Ex 1.38 
+(define (estimate-e max-k)
+  (define (eulers-function i)
+    (if (= (remainder (- i 2) 3) 0)
+        (* 2 (+ 1 (/ ( - i 2) 3.0)))
+        1))
+  (+ 2 (cont-frac-recur (λ(i) 1.0) eulers-function max-k)))
+ 
+
+;;; Ex 1.39
+(define (tan-cf x k)
+  (define (d i)
+    (- ( * 2 i ) 1))
+  (define (n i)
+    (if (= i 1)
+        x
+        (- (square x))))
+  (cont-frac-recur n d k))
+
+  
+;;; Derivatives
+(define (deriv g)
+  (define dx 0.00001)
+  (λ(x) (/ (- (g (+ x dx)) (g x)) dx)))
+
+(define (newton-transform g)
+  (λ(x) (- x (/ (g x) ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (find-fixed-point (newton-transform g) guess))
+
+(define (sqrt-newton x)
+  (newtons-method (λ(y) (- (square y) x)) 1.0))
+
+;;; Ex 1.40
+(define (cubic a b c)
+  (λ(x) (/ (* -1 (+ (cube x)
+                    (* a (square x))
+                    c))
+           b)))
+
+;; Solves equations of the form x^3 + a x^2 + bx + c
+(define (solve-cubic-equation a b c)
+  (newtons-method (cubic a b c) 1.0))
+
+
+;;; Ex 1.41 
+(define (double f)
+  "f is a procedure that takes exactly one argument"
+  (λ(x) (f (f x))))
+  
+
+;;; Ex 1.42
+(define (compose f g)
+  "f,g are procedure that takes exactly one argument"
+  (λ(x) (f (g x))))
+
+;;; Ex 1.43 
+(define (repeated f n)
+  "f takes 1 argument only and n is a positive integer. This returns a function that applies f n times repeatedly on one input"
+  (if (= n 1)
+      (λ(x) (f x))
+      (compose f (repeated f (- n 1)))))
+
+(define (smooth f)
+  (define dx 0.00001)
+  (λ(x) (/ (+ (f x)
+              (f (- x dx))
+              (f (+ x dx)))
+           3)))
+
+(define (n-fold-smooth f n)
+  (repeated (smooth f) n))
+
+;;; Fixed Point 
+(define (find-fixed-point f initial-guess num-repeats)
+  (define (good-enough? v1 v2)
+    (< (abs (- v1 v2)) 0.001))
+  
+  (define (improve-guess guess)
+    ((repeated (average-damp f) num-repeats) guess))
+  
+  (define (print-guess guess)
+    (display guess)
+    (newline))
+  
+  (define (try f guess)    
+    (print-guess guess)
+    (let ((value (f guess)))
+        (if (good-enough? guess value) guess
+              (try f (improve-guess guess)))))
+  (try f initial-guess))
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (power x n)
+  (cond ((= n 0) 1)
+        (( = n 1) x)
+        (else (* x (power x (- n 1))))))
+
+(define (nth-root x n num-repeated-damping)
+  (find-fixed-point (λ(y) (/ x (power y (- n 1 )))) 1.0 num-repeated-damping))
+
