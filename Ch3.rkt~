@@ -5,11 +5,3 @@
       (begin (set! balance (- balance amount))
              balance)
              "Insufficient funds"))
-<<<<<<< HEAD
-=======
-
-(define (sqrt x)
-  (define (good-enough? guess)
-    (< (abs (- (square guess) x)) 0.001)
-    
->>>>>>> ok

@@ -5,7 +5,6 @@
       (begin (set! balance (- balance amount))
              balance)
              "Insufficient funds"))
-<<<<<<< HEAD
 ;;; Ex 3.1
 (define (make-accumulator amount)
   (let ((balance amount)) ; initialize with amount
@@ -47,10 +46,3 @@
                       (else (error "Unknown request -- MAKE-ACCOUNT"
                                    m))))))
   dispatch))
-=======
-
-(define (sqrt x)
-  (define (good-enough? guess)
-    (< (abs (- (square guess) x)) 0.001)
-    
->>>>>>> ok
