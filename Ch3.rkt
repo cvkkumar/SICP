@@ -1,4 +1,6 @@
-#lang racket
+#lang planet neil/sicp
+ 
+
 (define balance 100)
 (define (withdraw amount)
   (if (>= balance amount)
@@ -8,14 +10,14 @@
 ;;; Ex 3.1
 (define (make-accumulator amount)
   (let ((balance amount)) ; initialize with amount
-    (λ(amount)
+    (lambda (amount)
       (begin (set! balance (+ balance amount))
              balance))))
 
 ;;; Ex 3.2
 (define (make-monitored f)
   (let ((counter 0))
-    (λ(x)
+    (lambda(x)
       
       (cond ((eq? x 'how-many-calls) counter)
             ((eq? x 'reset-count) (set! counter 0))
@@ -77,3 +79,47 @@
         (set! state (+ x state))
         old-state))
     switch-state))
+
+
+;; 3.12
+(define (append! x y)
+  (set-cdr! (last-pair x) y) x)
+(define (last-pair x)
+  (if (null? (cdr x))
+      x
+      (last-pair (cdr x))))
+;;; 3.13
+(define (make-cycle x)
+  (set-cdr! (last-pair x) x)
+  x)
+
+;;; 3.14
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x)
+        y
+        (let (( temp (cdr x)))
+          (set-cdr! x y)
+          (loop temp x))))
+  (loop x '()))
+
+;;; 3.16
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
+
+
+(define at1 '(a b c)) ;; Returns 3
+(define x '(a))
+(define at2 (list x x)) ;;; Returns 4
+(define y (cons x x))
+(define at3 (cons y y))
+
+;;; 3.17
+
+  
+
+
