@@ -22,25 +22,18 @@
             (else (begin (set! counter (+ counter 1)) (f x)))))))
 (define (square x) (* x x))
 
-(define (contains? l item)
-  (cond ((eq? l '()) #f)
-        ((eq? (car l) item) #t)
-        (else (contains? (cdr l) item))))
-
-
 ;;; Ex 3.3 and 3.4
 (define (make-account balance password)
   (let ((num-error 0)
-        (password-list (list password)))
-     
+        (pwd-list '(password))
+        
     (define (call-the-cops)
       (error "Incorrect Password too many times... Cops are called"))
     
     (define (password-correct? pwd)
-            (contains? password-list pwd))
-    
-    (define (set-new-password new-pwd)
-      (set! password-list (append password-list (list new-pwd))))
+      (cond ((empty? pwd-list) #f)
+              ((eq? pwd (car pwd-list)) #t)
+              (else (check-in-list pwd (cdr pwd-list))))))
     
     (define (withdraw amount)
       (if (>= balance amount)
@@ -51,6 +44,8 @@
     (define (deposit amount)
       (set! balance (+ balance amount)) balance)
     
+    (define (add-account pwd)
+      (append 
   
     (define (dispatch pwd m)
       (cond ((not (password-correct? pwd))
@@ -59,21 +54,12 @@
                  (else (error "Incorrect Password" num-error)))))
           (else (cond ((eq? m 'withdraw) withdraw)
                       ((eq? m 'deposit) deposit)
-                      ((eq? m 'check-password) password-correct?)
-                      ((eq? m 'set-new-password) set-new-password) 
+                      ((eq? m 'add-account) add-account)
                       (else (error "Unknown request -- MAKE-ACCOUNT"
                                    m))))))
   dispatch))
 
 ;;; Ex 3.7
-(define (make-joint original-account original-password new-password)
-  (cond ((original-account original-password 'check-password) ((original-account original-password 'set-new-password) new-password) original-account)
-        (else (error "Cant create joint account! Wrong password"))))
-;;; Ex 3.8
-(define f
-  (let ((state 0))
-    (define (switch-state x)
-      (let ((old-state state))
-        (set! state (+ x state))
-        old-state))
-    switch-state))
+;(define (make-joint original-account original-password new-password)
+;  (
+  
