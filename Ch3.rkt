@@ -23,26 +23,43 @@
 (define (square x) (* x x))
 
 ;;; Ex 3.3 and 3.4
-(define (call-the-cops)
-  (error "Incorrect Password too many times... Cops are called"))
 (define (make-account balance password)
-  (let ((num-error 0))
+  (let ((num-error 0)
+        (pwd-list '(password))
+        
+    (define (call-the-cops)
+      (error "Incorrect Password too many times... Cops are called"))
+    
+    (define (password-correct? pwd)
+      (cond ((empty? pwd-list) #f)
+              ((eq? pwd (car pwd-list)) #t)
+              (else (check-in-list pwd (cdr pwd-list))))))
+    
     (define (withdraw amount)
       (if (>= balance amount)
         (begin (set! balance (- balance amount))
                balance)
         "Insufficient funds"))
-  (define (deposit amount)
-    (set! balance (+ balance amount))
-    balance)
-  (define (dispatch pwd m)
     
-    (cond ((not (eq? pwd password))
+    (define (deposit amount)
+      (set! balance (+ balance amount)) balance)
+    
+    (define (add-account pwd)
+      (append 
+  
+    (define (dispatch pwd m)
+      (cond ((not (password-correct? pwd))
            (begin (set! num-error (+ num-error 1))
            (cond ((> num-error 7) (call-the-cops))
                  (else (error "Incorrect Password" num-error)))))
           (else (cond ((eq? m 'withdraw) withdraw)
                       ((eq? m 'deposit) deposit)
+                      ((eq? m 'add-account) add-account)
                       (else (error "Unknown request -- MAKE-ACCOUNT"
                                    m))))))
   dispatch))
+
+;;; Ex 3.7
+;(define (make-joint original-account original-password new-password)
+;  (
+  
