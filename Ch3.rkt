@@ -112,14 +112,56 @@
          1)))
 
 
-(define at1 '(a b c)) ;; Returns 3
-(define x '(a))
-(define at2 (list x x)) ;;; Returns 4
-(define y (cons x x))
-(define at3 (cons y y))
+;(define at1 '(a b c)) ;; Returns 3
+;(define x '(a))
+;(define at2 (list x x)) ;;; Returns 4
+;(define y (cons x x))
+;(define at3 (cons y y))
 
-;;; 3.17
+;;; TODO: 3.17, 3.18, 3.19
 
+;;; 3.20
+; Done in book
+
+;;; Queue Implementation
+(define (make-queue)
+  (cons '() '()))
+
+(define (empty-queue? queue)
+  (null? (front-ptr queue)))
+
+(define (front-ptr queue)
+  (car queue))
+(define (rear-ptr queue)
+  (cdr queue))
+(define (set-front-ptr! queue item) (set-car! queue item))
+(define (set-rear-ptr! queue item)
+  (set-cdr! queue item))
+
+(define (front-queue queue)
+  (if (empty-queue? queue)
+      (error "FRONT called with an empty queue" queue)
+      (car (front-ptr queue))))
+
+(define (insert-queue! queue item)
+  (let ((new-pair (cons item '())))
+    (cond ((empty-queue? queue)
+           (set-front-ptr! queue new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue)
+          (else
+           (set-cdr! (rear-ptr queue) new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue))))
+(define (delete-queue! queue)
+  (cond ((empty-queue? queue)
+         (error "Empty Queue"))
+        (else (set-front-ptr! queue (cdr (front-ptr queue)))
+              queue)))
+(define (print-queue queue)
+  (cond ((empty-queue? queue)'())
+        (else (display (car queue))
+              (print-queue (cdr queue)))))
   
 
 
